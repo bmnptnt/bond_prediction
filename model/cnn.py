@@ -2,12 +2,12 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 class CNN(nn.Module):
-    def __init__(self,batch_size=1):
+    def __init__(self,batch_size=1,numOFdata=4):
         super(CNN, self).__init__()
         self.batch_size = batch_size
 
         self.Convloution_1=nn.Sequential(
-            nn.Conv1d(in_channels=4, out_channels=64, kernel_size=3, padding=1),
+            nn.Conv1d(in_channels=numOFdata, out_channels=64, kernel_size=3, padding=1),#in_channel : 데이터 종류(예측 데이터 제외)
             nn.ReLU(),
             nn.Dropout(p=0.5),
             nn.Conv1d(in_channels=64, out_channels=64, kernel_size=3, padding=1),
@@ -32,7 +32,7 @@ class CNN(nn.Module):
         self.Pool = nn.MaxPool1d(kernel_size=2,stride=2)
 
         self.FC = nn.Sequential(
-            nn.Linear(5*128,80),
+            nn.Linear(5*128,80), #period가 pooling 두번 거쳐서 20->5가 됨
             nn.BatchNorm1d(80),
             nn.ReLU(),
             nn.Linear(80, 20),

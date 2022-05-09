@@ -4,6 +4,7 @@ from sklearn.preprocessing import LabelEncoder
 from torch.utils.data import dataloader
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler,MinMaxScaler,RobustScaler,MaxAbsScaler
 
 def data_encoding(data):
 
@@ -12,6 +13,12 @@ def data_encoding(data):
     encoded_data=le.transform(data)
 
     return encoded_data
+
+def data_regularization(data):
+    sc=StandardScaler()
+    transform_data=sc.fit_transform(data)
+
+    return transform_data
 
 def load_data(data_path,data_selec,data_size):
     print('load the total data...')
@@ -22,6 +29,8 @@ def load_data(data_path,data_selec,data_size):
     selected_data = selected_data[:data_size]
 
     selected_data['label'] = data_encoding(selected_data['label'])
+    selected_data.iloc[:,1:]=data_regularization(selected_data.iloc[:,1:])
+
 
     return selected_data
 

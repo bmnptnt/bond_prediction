@@ -9,7 +9,8 @@ from model.cnn import CNN #딥러닝 모델 모듈 코드 임포트
 
 
 '''################################# 파라미터 설정 #################################'''
-DATA_SELEC=['label', 'bond3Y', 'SP500', 'Gold', 'US_GDP'] #데이터 선별
+DATA_SELEC=['label', 'bond3Y','SP500','US_GDP','Gold'] #데이터 선별
+num_data=len(DATA_SELEC)-1
 PERIOD = 20 #학습할 데이터의 기간 단위(일)
 DATA_SIZE=2180 #학습, 평가에 사용할 총 데이터 크기
 
@@ -37,7 +38,7 @@ def train():
     train_loader, valid_loader=utility_tools.generate_dataset(selected_data,Valid_Scale,PERIOD,BATCH)
 
     if MODEL=='cnn':
-        model=CNN(batch_size=BATCH).to(device)
+        model=CNN(batch_size=BATCH,numOFdata=num_data).to(device)
 
     optimizer=optim.Adam(model.parameters(),lr=Learning_Rate)
     criterion=torch.nn.CrossEntropyLoss().to(device)
