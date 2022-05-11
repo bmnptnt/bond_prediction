@@ -1,32 +1,37 @@
 import pandas as pd
 import numpy as np
-
+import os
 import torch
 import torch.optim as optim
 
 import utility_tools #데이터전처리와 같은 함수들이 포함된 코드 임포트
 from model.cnn import CNN #딥러닝 모델 모듈 코드 임포트
+from model.cstm import CSTM
 
 
 '''################################# 파라미터 설정 #################################'''
-DATA_SELEC=['label', 'bond3Y','SP500','US_GDP','Gold'] #데이터 선별
+DATA_SELEC=['label', 'bond3Y','SP500','Gold'] #데이터 선별
 num_data=len(DATA_SELEC)-1
-PERIOD = 20 #학습할 데이터의 기간 단위(일)
-DATA_SIZE=2180 #학습, 평가에 사용할 총 데이터 크기
+PERIOD = 40 #학습할 데이터의 기간 단위(일)
+DATA_SIZE=5000 #학습, 평가에 사용할 총 데이터 크기
 
-Valid_Scale=180 #평가에 사용할 데이터 크기
+Valid_Scale=500 #평가에 사용할 데이터 크기
 MODEL='cnn'#학습에 사용할 모델
-BATCH=32 #batch size, 한 번 학습할 때 들어가는 데이터 묶음
+BATCH=64 #batch size, 한 번 학습할 때 들어가는 데이터 묶음
 Learning_Rate=1e-4 #gradient descent에서 한번에 어느정도 하강할지
-EPOCH=10000 #학습 사이클을 도는 횟수
+EPOCH=1000 #학습 사이클을 도는 횟수
 
 
-DATA_PATH='whole2200.xlsx' #학습 데이터 소스
-Valid_Point = 1000 #테스트데이터를 통해 학습 성능 평가하는 주기
+DATA_PATH='whole_data.xlsx' #학습 데이터 소스
+Valid_Point = 100 #테스트데이터를 통해 학습 성능 평가하는 주기
 CHECKPOINT_save=2000 #학습한 모델을 저장하는 주기
 CHECKPOINT_dir='checkpoints' #학슴모델을 저장하는 위치
 '''################################# 파라미터 설정 #################################'''
-
+try:
+    os.mkdir(CHECKPOINT_dir)
+    os.mkdir(CHECKPOINT_dir + "/" + MODEL)
+except:
+    pass
 
 def train():
 
@@ -39,6 +44,9 @@ def train():
 
     if MODEL=='cnn':
         model=CNN(batch_size=BATCH,numOFdata=num_data).to(device)
+    elif MODEL=='cstm':
+        model=CSTM(batch_size=BATCH,numOFdata=num_data).to(device)
+    print('Training model :',MODEL)
 
     optimizer=optim.Adam(model.parameters(),lr=Learning_Rate)
     criterion=torch.nn.CrossEntropyLoss().to(device)
@@ -62,7 +70,7 @@ def train():
             optimizer.step()
 
             average_cost+=loss/len(train_loader)
-        if(epoch+1)%100==0:
+        if(epoch+1)%10==0:
             print('epoch : {:>04} loss = {:>.6}'.format(epoch+1,average_cost))
 
 
