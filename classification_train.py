@@ -2,24 +2,25 @@ import pandas as pd
 import numpy as np
 import os
 import torch
+import torch.nn as nn
 import torch.optim as optim
-
+import torch.nn.init as init
 import utility_tools #데이터전처리와 같은 함수들이 포함된 코드 임포트
 from model.cnn import CNN #딥러닝 모델 모듈 코드 임포트
 from model.cstm import CSTM
 
 
 '''################################# 파라미터 설정 #################################'''
-DATA_SELEC=['label', 'bond3Y','SP500','Gold'] #데이터 선별
+DATA_SELEC=['label', 'bond3Y','KOSPI','KOSPI200','KOSDAQ','SP500','Gold','US_FER','US_Export','Hanseng','Nikkei225'] #데이터 선별
 num_data=len(DATA_SELEC)-1
-PERIOD = 40 #학습할 데이터의 기간 단위(일)
+PERIOD = 80 #학습할 데이터의 기간 단위(일)
 DATA_SIZE=5000 #학습, 평가에 사용할 총 데이터 크기
 
 Valid_Scale=500 #평가에 사용할 데이터 크기
 MODEL='cnn'#학습에 사용할 모델
 BATCH=64 #batch size, 한 번 학습할 때 들어가는 데이터 묶음
 Learning_Rate=1e-4 #gradient descent에서 한번에 어느정도 하강할지
-EPOCH=1000 #학습 사이클을 도는 횟수
+EPOCH=5000 #학습 사이클을 도는 횟수
 
 
 DATA_PATH='whole_data.xlsx' #학습 데이터 소스
@@ -32,7 +33,9 @@ try:
     os.mkdir(CHECKPOINT_dir + "/" + MODEL)
 except:
     pass
-
+def weight_init(m):
+    if isinstance(m, nn.Linear):
+        init.kaiming_uniform_(m.weight.data)
 def train():
 
     if torch.cuda.is_available() : device = 'cuda'
@@ -48,6 +51,8 @@ def train():
         model=CSTM(batch_size=BATCH,numOFdata=num_data).to(device)
     print('Training model :',MODEL)
 
+
+    model.apply(weight_init)
     optimizer=optim.Adam(model.parameters(),lr=Learning_Rate)
     criterion=torch.nn.CrossEntropyLoss().to(device)
 

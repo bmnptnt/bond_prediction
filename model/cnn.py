@@ -12,7 +12,7 @@ class CNN(nn.Module):
             nn.Dropout(p=0.3),
             nn.Conv1d(in_channels=64, out_channels=64, kernel_size=5, padding=2),
             nn.ReLU(),
-            #nn.Dropout(p=0.5),
+            nn.Dropout(p=0.3),
             nn.Conv1d(in_channels=64, out_channels=64, kernel_size=7, padding=3),
             nn.ReLU(),
             nn.Dropout(p=0.3)
@@ -24,7 +24,7 @@ class CNN(nn.Module):
             nn.Dropout(p=0.3),
             nn.Conv1d(in_channels=128, out_channels=128, kernel_size=5, padding=2),
             nn.ReLU(),
-            #nn.Dropout(p=0.5),
+            nn.Dropout(p=0.3),
             nn.Conv1d(in_channels=128, out_channels=128, kernel_size=7, padding=3),
             nn.ReLU(),
             nn.Dropout(p=0.3)
@@ -32,27 +32,41 @@ class CNN(nn.Module):
         self.Convloution_3 = nn.Sequential(
             nn.Conv1d(in_channels=128, out_channels=256, kernel_size=5, padding=2),
             nn.ReLU(),
-            #nn.Dropout(p=0.5),
-            nn.Conv1d(in_channels=256, out_channels=256, kernel_size=5, padding=2),
+            nn.Dropout(p=0.3),
+            nn.Conv1d(in_channels=256, out_channels=256, kernel_size=7, padding=3),
             nn.ReLU(),
             nn.Dropout(p=0.3),
             nn.Conv1d(in_channels=256, out_channels=256, kernel_size=5, padding=2),
             nn.ReLU(),
-            #nn.Dropout(p=0.5),
+            nn.Dropout(p=0.3),
             nn.Conv1d(in_channels=256, out_channels=256, kernel_size=7, padding=3),
             nn.ReLU(),
             nn.Dropout(p=0.3)
         )
+        self.Convloution_4 = nn.Sequential(
+            nn.Conv1d(in_channels=256, out_channels=512, kernel_size=5, padding=2),
+            nn.ReLU(),
+            nn.Dropout(p=0.3),
+            nn.Conv1d(in_channels=512, out_channels=512, kernel_size=7, padding=3),
+            nn.ReLU(),
+            nn.Dropout(p=0.3),
+            nn.Conv1d(in_channels=512, out_channels=512, kernel_size=5, padding=2),
+            nn.ReLU(),
+            nn.Dropout(p=0.3),
+            nn.Conv1d(in_channels=512, out_channels=512, kernel_size=7, padding=3),
+            nn.ReLU(),
+            nn.Dropout(p=0.3)
+        )
         self.Pool = nn.MaxPool1d(kernel_size=2,stride=2)
-
+        self.Pool3 = nn.MaxPool1d(kernel_size=3, stride=3)
         self.FC = nn.Sequential(
-            nn.Linear(5*256,80), #period가 pooling 3번 거쳐서 40->5가 됨
-            #nn.BatchNorm1d(80),
+            nn.Linear(5*512,256), #period가 pooling 3번 거쳐서 40->5가 됨
+            nn.BatchNorm1d(256),
             nn.ReLU(),
-            nn.Linear(80, 20),
-            #nn.BatchNorm1d(20),
+            nn.Linear(256, 64),
+            nn.BatchNorm1d(64),
             nn.ReLU(),
-            nn.Linear(20, 2),
+            nn.Linear(64, 2),
         )
 
     def forward(self, x):
@@ -61,6 +75,8 @@ class CNN(nn.Module):
         x = self.Convloution_2(x)
         x = self.Pool(x)
         x = self.Convloution_3(x)
+        x = self.Pool(x)
+        x = self.Convloution_4(x)
         x = self.Pool(x)
         #x = x.view(-1, 5*128)
         x = x.view([self.batch_size, -1])
