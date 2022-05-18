@@ -11,20 +11,20 @@ from model.cstm import CSTM
 
 
 '''################################# 파라미터 설정 #################################'''
-DATA_SELEC=['label', 'bond3Y','KOSPI','KOSPI200','KOSDAQ','SP500','Gold','US_FER','US_Export','Hanseng','Nikkei225'] #데이터 선별
+DATA_SELEC=['label', 'bond3Y','KOSPI','SP500','Gold','US_FER','US_Export','Hanseng','Nikkei225'] #데이터 선별
 num_data=len(DATA_SELEC)-1
 PERIOD = 80 #학습할 데이터의 기간 단위(일)
 DATA_SIZE=5000 #학습, 평가에 사용할 총 데이터 크기
 
 Valid_Scale=500 #평가에 사용할 데이터 크기
-MODEL='cnn'#학습에 사용할 모델
+MODEL='cstm'#학습에 사용할 모델
 BATCH=64 #batch size, 한 번 학습할 때 들어가는 데이터 묶음
-Learning_Rate=1e-4 #gradient descent에서 한번에 어느정도 하강할지
+Learning_Rate=1e-5 #gradient descent에서 한번에 어느정도 하강할지
 EPOCH=5000 #학습 사이클을 도는 횟수
 
 
 DATA_PATH='whole_data.xlsx' #학습 데이터 소스
-Valid_Point = 100 #테스트데이터를 통해 학습 성능 평가하는 주기
+Valid_Point = 1000 #테스트데이터를 통해 학습 성능 평가하는 주기
 CHECKPOINT_save=2000 #학습한 모델을 저장하는 주기
 CHECKPOINT_dir='checkpoints' #학슴모델을 저장하는 위치
 '''################################# 파라미터 설정 #################################'''
@@ -48,7 +48,7 @@ def train():
     if MODEL=='cnn':
         model=CNN(batch_size=BATCH,numOFdata=num_data).to(device)
     elif MODEL=='cstm':
-        model=CSTM(batch_size=BATCH,numOFdata=num_data).to(device)
+        model=CSTM(batch_size=BATCH,input_size=num_data).to(device)
     print('Training model :',MODEL)
 
 
@@ -59,7 +59,7 @@ def train():
     for epoch in range(EPOCH):
 
         average_cost=0.0
-        model.train().to(device)
+        model.train()
         for i,train_data in enumerate(train_loader):
 
             x_train=train_data[0].float()
@@ -81,7 +81,7 @@ def train():
 
         if(epoch+1)%Valid_Point==0:
             print("\nvalidation testing...")
-            model.eval().to(device)
+            model.eval()
             v_cost=0.0
             correct = 0
 
