@@ -11,20 +11,22 @@ from model.cstm import CSTM
 
 
 '''################################# 파라미터 설정 #################################'''
-DATA_SELEC=['label', 'bond3Y','KOSPI','SP500','Gold','US_FER','US_Export','Hanseng','Nikkei225'] #데이터 선별
+label_name='detail_label'
+DATA_SELEC=[label_name,'bond3Y','KOSPI','KOSDAQ','KR_CPI','KR_CA','SP500','Gold'] #데이터 선별
 num_data=len(DATA_SELEC)-1
+label_num=4
 PERIOD = 80 #학습할 데이터의 기간 단위(일)
 DATA_SIZE=5000 #학습, 평가에 사용할 총 데이터 크기
 
 Valid_Scale=500 #평가에 사용할 데이터 크기
-MODEL='cstm'#학습에 사용할 모델
+MODEL='cnn'#학습에 사용할 모델
 BATCH=64 #batch size, 한 번 학습할 때 들어가는 데이터 묶음
 Learning_Rate=1e-5 #gradient descent에서 한번에 어느정도 하강할지
 EPOCH=5000 #학습 사이클을 도는 횟수
 
 
 DATA_PATH='whole_data.xlsx' #학습 데이터 소스
-Valid_Point = 1000 #테스트데이터를 통해 학습 성능 평가하는 주기
+Valid_Point = 100 #테스트데이터를 통해 학습 성능 평가하는 주기
 CHECKPOINT_save=2000 #학습한 모델을 저장하는 주기
 CHECKPOINT_dir='checkpoints' #학슴모델을 저장하는 위치
 '''################################# 파라미터 설정 #################################'''
@@ -42,11 +44,11 @@ def train():
     else : device = 'cpu'
     print('Device for training :',device)
 
-    selected_data=utility_tools.load_data(DATA_PATH,DATA_SELEC,DATA_SIZE)
-    train_loader, valid_loader=utility_tools.generate_dataset(selected_data,Valid_Scale,PERIOD,BATCH)
+    selected_data=utility_tools.load_data(DATA_PATH,DATA_SELEC,DATA_SIZE,label_name)
+    train_loader, valid_loader=utility_tools.generate_dataset(selected_data,Valid_Scale,PERIOD,BATCH,label_name)
 
     if MODEL=='cnn':
-        model=CNN(batch_size=BATCH,numOFdata=num_data).to(device)
+        model=CNN(batch_size=BATCH,input_size=num_data,label=label_num).to(device)
     elif MODEL=='cstm':
         model=CSTM(batch_size=BATCH,input_size=num_data).to(device)
     print('Training model :',MODEL)
@@ -100,7 +102,7 @@ def train():
                     v_cost+=v_loss/len(valid_loader)
 
             v_accuracy=100.*correct/len(valid_loader.dataset)
-            print('\n[EPOCH : {:>4}]\t[Valid_loss : {:.6f}]\t[Valid Accuracy : {:.2f}]'.format(epoch+1,v_cost,v_accuracy))
+            print('\n[EPOCH : {:>4}]\t[Valid_loss : {:.6f}]\t[Valid Accuracy : {:.2f}]\n'.format(epoch+1,v_cost,v_accuracy))
 
 
         if(epoch+1)%CHECKPOINT_save==0:

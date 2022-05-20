@@ -2,12 +2,12 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 class CNN(nn.Module):
-    def __init__(self,batch_size=1,numOFdata=4):
+    def __init__(self,batch_size=1,input_size=4,label=2):
         super(CNN, self).__init__()
         self.batch_size = batch_size
 
         self.Convloution_1=nn.Sequential(
-            nn.Conv1d(in_channels=numOFdata, out_channels=64, kernel_size=5, padding=2),#in_channel : 데이터 종류(예측 데이터 제외)
+            nn.Conv1d(in_channels=input_size, out_channels=64, kernel_size=5, padding=2),#in_channel : 데이터 종류(예측 데이터 제외)
             nn.ReLU(),
             nn.Dropout(p=0.3),
             nn.Conv1d(in_channels=64, out_channels=64, kernel_size=5, padding=2),
@@ -66,7 +66,7 @@ class CNN(nn.Module):
             nn.Linear(256, 64),
             nn.BatchNorm1d(64),
             nn.ReLU(),
-            nn.Linear(64, 2),
+            nn.Linear(64, label),
         )
 
     def forward(self, x):
