@@ -11,25 +11,26 @@ def data_encoding(data):
     le=LabelEncoder()
     le.fit(data)
     encoded_data=le.transform(data)
-
+    print(encoded_data)
     return encoded_data
 
 def data_regularization(data):
     sc=StandardScaler()
+    mm=MinMaxScaler()
     transform_data=sc.fit_transform(data)
-
+    transform_data=mm.fit_transform(transform_data)
     return transform_data
 
 def load_data(data_path,data_selec,data_size,label_name):
     print('load the total data...')
     origin_data = pd.read_excel(data_path, engine='openpyxl')
     selected_data = origin_data[data_selec]
-
+    selected_data=selected_data[:data_size+100]
     selected_data = selected_data[::-1].reset_index(drop=True)
     selected_data = selected_data[:data_size]
 
     selected_data[label_name] = data_encoding(selected_data[label_name])
-    print(selected_data[label_name].unique())
+
     selected_data.iloc[:,1:]=data_regularization(selected_data.iloc[:,1:])
 
 
@@ -54,7 +55,7 @@ def transform_np_dataloader(data, period,batch_size,label_name):
 def generate_dataset(data,valid_scale,period,batch_size,label_name):
 
     train_split, valid_split = train_test_split(data, test_size=valid_scale, shuffle=False)
-
+    print(len(train_split),len(valid_split))
     print('generate training data...')
     train_loader=transform_np_dataloader(train_split,period,batch_size,label_name)
     print('generate validation data...')
