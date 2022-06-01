@@ -1,5 +1,7 @@
 import torch
 import torch.nn as nn
+import os
+import numpy as np
 import random
 from model.cnn import CNN #딥러닝 모델 모듈 코드 임포트
 from model.cstm import CSTM
@@ -11,33 +13,34 @@ DATA_SELEC=[label_name,'bond3Y','KOSPI','KOSPI200','KOSDAQ','NASDAQ','NASDAQ100'
 num_data=len(DATA_SELEC)-1
 label_num=4
 PERIOD = 80 #학습할 데이터의 기간 단위(일)
-DATA_SIZE=200 #학습, 평가에 사용할 총 데이터 크기
+DATA_SIZE=120+PERIOD #투자 기간
 
-Valid_Scale=500 #평가에 사용할 데이터 크기
+
 MODEL='cstm'#학습에 사용할 모델
 BATCH=1 #batch size, 한 번 학습할 때 들어가는 데이터 묶음
-Learning_Rate=1e-4#gradient descent에서 한번에 어느정도 하강할지
-EPOCH=3000 #학습 사이클을 도는 횟수
-
 
 DATA_PATH='whole_data.xlsx' #학습 데이터 소스
-Valid_Point = 100 #테스트데이터를 통해 학습 성능 평가하는 주기
-CHECKPOINT_save=2000 #학습한 모델을 저장하는 주기
-CHECKPOINT_dir='checkpoints' #학슴모델을 저장하는 위치
+
 load_checkpoint='checkpoints/{}/{}_largestAccuracy.pth'
 '''################################# 파라미터 설정 #################################'''
 
 def test():
-    seed = random.randint(1, 10000)
+    '''seed = random.randint(1, 10000)
     torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed(seed)'''
+
 
     if torch.cuda.is_available() : device = 'cuda'
     else : device = 'cpu'
     print('Device for training :',device)
 
-    test_data=utility_tools.load_data(DATA_PATH,DATA_SELEC,DATA_SIZE,label_name)
+    test_data=utility_tools.load_data(DATA_PATH,DATA_SELEC,DATA_SIZE,label_name,test=False)
+    investing_data=utility_tools.load_data(DATA_PATH,DATA_SELEC,DATA_SIZE,label_name,test=True)
     test_loader=utility_tools.transform_np_dataloader(test_data,PERIOD,BATCH,label_name)
+
+    count=0
+    assets=0.0
+    earning=0.0
 
     if MODEL=='cnn':
         model=CNN(batch_size=BATCH,input_size=num_data,label=label_num).to(device)
@@ -55,8 +58,30 @@ def test():
 
             y_test_pred=model(x_test)
 
-            print('number : [{}] class : [{}]\n'.format(y_test_pred,torch.argmax(y_test_pred)))
 
+            #print(torch.argmax(y_test_pred))
+
+            if torch.argmax(y_test_pred)==0: #little_buy
+                count+=2
+                assets-= 2*investing_data['bond3Y'][i+PERIOD]
+
+            elif torch.argmax(y_test_pred) == 1:  # little_sell
+                if count>0 :
+                    assets += (count // 2) * investing_data['bond3Y'][i + PERIOD]
+                    count -= (count//2)
+
+
+            elif torch.argmax(y_test_pred) == 2: # very_buy
+                count += 4
+                assets -= 4 * investing_data['bond3Y'][i + PERIOD]
+
+            elif torch.argmax(y_test_pred) == 3:  # very_sell
+                if count > 0:
+                    assets += count * investing_data['bond3Y'][i + PERIOD]
+                    count = 0
+                    earning+=assets
+                    assets = 0
+        print('bond count : {} assets : {} earnings : {}'.format(count,assets,earning))
 
 if __name__ == "__main__":
     test()

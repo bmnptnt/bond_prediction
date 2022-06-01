@@ -22,7 +22,7 @@ Valid_Scale=500 #평가에 사용할 데이터 크기
 MODEL='cstm'#학습에 사용할 모델
 BATCH=32 #batch size, 한 번 학습할 때 들어가는 데이터 묶음
 Learning_Rate=1e-4#gradient descent에서 한번에 어느정도 하강할지
-EPOCH=3000 #학습 사이클을 도는 횟수
+EPOCH=1000 #학습 사이클을 도는 횟수
 
 
 DATA_PATH='whole_data.xlsx' #학습 데이터 소스
