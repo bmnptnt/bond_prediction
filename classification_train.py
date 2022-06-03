@@ -12,14 +12,14 @@ import random
 
 '''################################# 파라미터 설정 #################################'''
 label_name='detail_label'
-DATA_SELEC=[label_name,'bond3Y','KOSPI','KOSPI200','KOSDAQ','NASDAQ','NASDAQ100'] #데이터 선별
+DATA_SELEC=[label_name,'bond3Y','KOSPI','SP500','Gold','KR_CPI','KR_CA','KR_IMM','KR_Export'] #데이터 선별
 num_data=len(DATA_SELEC)-1
 label_num=4
 PERIOD = 80 #학습할 데이터의 기간 단위(일)
 DATA_SIZE=5000 #학습, 평가에 사용할 총 데이터 크기
 
 Valid_Scale=500 #평가에 사용할 데이터 크기
-MODEL='cstm'#학습에 사용할 모델
+MODEL='cnn'#학습에 사용할 모델
 BATCH=32 #batch size, 한 번 학습할 때 들어가는 데이터 묶음
 Learning_Rate=1e-4#gradient descent에서 한번에 어느정도 하강할지
 EPOCH=1000 #학습 사이클을 도는 횟수
@@ -39,9 +39,12 @@ def weight_init(m):
     if isinstance(m, nn.Linear):
         init.kaiming_uniform_(m.weight.data)
 def train():
-    seed = random.randint(1, 10000)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
+    torch.manual_seed(12)
+    torch.cuda.manual_seed(12)
+    random.seed(12)
+    np.random.seed(12)
+    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.deterministic = True  # 이 코드 사용하면 처리속도 저하될 수 있음, 여차하면 주석처리 하고 실행
 
     if torch.cuda.is_available() : device = 'cuda'
     else : device = 'cpu'

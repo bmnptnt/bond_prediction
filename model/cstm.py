@@ -65,7 +65,7 @@ class CSTM(nn.Module):
         self.lstm = nn.LSTM(input_size=256, hidden_size=self.hidden_size, num_layers=1, batch_first=True)
 
         self.FC = nn.Sequential(
-            nn.Linear(self.hidden_size*10,80), #period가 pooling 두번 거쳐서 20->5가 됨
+            nn.Linear(self.hidden_size*10,80),
             #nn.BatchNorm1d(80),
             nn.ReLU(),
             nn.Linear(80, 20),

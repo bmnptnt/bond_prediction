@@ -11,7 +11,7 @@ def data_encoding(data):
     le=LabelEncoder()
     le.fit(data)
     encoded_data=le.transform(data)
-    print(le.classes_)
+
     return encoded_data
 
 def data_regularization(data):
@@ -25,7 +25,7 @@ def load_data(data_path,data_selec,data_size,label_name,test=False):
     print('load the total data...')
     origin_data = pd.read_excel(data_path, engine='openpyxl')
     selected_data = origin_data[data_selec]
-    selected_data=selected_data[:data_size]
+    selected_data=selected_data[:data_size+100]
     selected_data = selected_data[::-1].reset_index(drop=True)
     selected_data = selected_data[:data_size]
 
