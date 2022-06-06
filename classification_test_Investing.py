@@ -9,7 +9,7 @@ import utility_tools
 
 '''################################# 파라미터 설정 #################################'''
 label_name='detail_label'
-DATA_SELEC=[label_name,'bond3Y','KOSPI','SP500','Gold','KR_CPI','KR_CA','KR_IMM','KR_Export'] #데이터 선별
+DATA_SELEC=[label_name,'bond3Y','KOSPI','KOSDAQ','SP500','Gold'] #데이터 선별
 num_data=len(DATA_SELEC)-1
 label_num=4
 PERIOD = 80 #학습할 데이터의 기간 단위(일)

@@ -4,68 +4,69 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 
 class CSTM(nn.Module):
-    def __init__(self,batch_size=1,input_size=4,label=4):
+    def __init__(self,batch_size=1,input_size=4,label=4,dropout_p=0.5):
         super(CSTM, self).__init__()
         self.batch_size = batch_size
-        self.hidden_size=64
+        self.dropout_p=dropout_p
+        self.hidden_size=128
         self.Convloution_1 = nn.Sequential(
             nn.Conv1d(in_channels=input_size, out_channels=64, kernel_size=5, padding=2),
             # in_channel : 데이터 종류(예측 데이터 제외)
             nn.ReLU(),
-            nn.Dropout(p=0.3),
+            nn.Dropout(p=dropout_p),
             nn.Conv1d(in_channels=64, out_channels=64, kernel_size=5, padding=2),
             nn.ReLU(),
-            nn.Dropout(p=0.3),
+            nn.Dropout(p=dropout_p),
             nn.Conv1d(in_channels=64, out_channels=64, kernel_size=7, padding=3),
             nn.ReLU(),
-            nn.Dropout(p=0.3)
+            nn.Dropout(p=dropout_p)
         )
         self.Convloution_2 = nn.Sequential(
             nn.Conv1d(in_channels=64, out_channels=128, kernel_size=5, padding=2),
             nn.ReLU(),
-            nn.Dropout(p=0.3),
+            nn.Dropout(p=dropout_p),
             nn.Conv1d(in_channels=128, out_channels=128, kernel_size=5, padding=2),
             nn.ReLU(),
-            nn.Dropout(p=0.3),
+            nn.Dropout(p=dropout_p),
             nn.Conv1d(in_channels=128, out_channels=128, kernel_size=7, padding=3),
             nn.ReLU(),
-            nn.Dropout(p=0.3)
+            nn.Dropout(p=dropout_p)
         )
 
         self.Convloution_3 = nn.Sequential(
             nn.Conv1d(in_channels=128, out_channels=256, kernel_size=5, padding=2),
             nn.ReLU(),
-            nn.Dropout(p=0.3),
+            nn.Dropout(p=dropout_p),
             nn.Conv1d(in_channels=256, out_channels=256, kernel_size=7, padding=3),
             nn.ReLU(),
-            nn.Dropout(p=0.3),
+            nn.Dropout(p=dropout_p),
             nn.Conv1d(in_channels=256, out_channels=256, kernel_size=5, padding=2),
             nn.ReLU(),
-            nn.Dropout(p=0.3),
+            nn.Dropout(p=dropout_p),
             nn.Conv1d(in_channels=256, out_channels=256, kernel_size=7, padding=3),
             nn.ReLU(),
-            nn.Dropout(p=0.3)
+            nn.Dropout(p=dropout_p)
         )
         self.Convloution_4 = nn.Sequential(
             nn.Conv1d(in_channels=256, out_channels=512, kernel_size=5, padding=2),
             nn.ReLU(),
-            nn.Dropout(p=0.3),
+            nn.Dropout(p=dropout_p),
             nn.Conv1d(in_channels=512, out_channels=512, kernel_size=7, padding=3),
             nn.ReLU(),
-            nn.Dropout(p=0.3),
+            nn.Dropout(p=dropout_p),
             nn.Conv1d(in_channels=512, out_channels=512, kernel_size=5, padding=2),
             nn.ReLU(),
-            nn.Dropout(p=0.3),
+            nn.Dropout(p=dropout_p),
             nn.Conv1d(in_channels=512, out_channels=512, kernel_size=7, padding=3),
             nn.ReLU(),
-            nn.Dropout(p=0.3)
+            nn.Dropout(p=dropout_p)
         )
         self.Pool = nn.MaxPool1d(kernel_size=2,stride=2)
 
-        self.lstm = nn.LSTM(input_size=256, hidden_size=self.hidden_size, num_layers=1, batch_first=True)
+        self.lstm = nn.LSTM(input_size=128, hidden_size=self.hidden_size, num_layers=1, batch_first=True)
 
         self.FC = nn.Sequential(
-            nn.Linear(self.hidden_size*10,80),
+            nn.Linear(self.hidden_size*20,80),
             #nn.BatchNorm1d(80),
             nn.ReLU(),
             nn.Linear(80, 20),
@@ -81,8 +82,8 @@ class CSTM(nn.Module):
         x = self.Pool(x)
         x = self.Convloution_2(x)
         x = self.Pool(x)
-        x = self.Convloution_3(x)
-        x = self.Pool(x)
+        #x = self.Convloution_3(x)
+        #x = self.Pool(x)
         #x = self.Convloution_4(x)
         #x = self.Pool(x)
         #x = self.Convloution_3(x)

@@ -22,7 +22,7 @@ def data_regularization(data):
     return transform_data
 
 def load_data(data_path,data_selec,data_size,label_name,test=False):
-    print('load the total data...')
+    print('load the data...')
     origin_data = pd.read_excel(data_path, engine='openpyxl')
     selected_data = origin_data[data_selec]
     selected_data=selected_data[:data_size+100]
