@@ -11,7 +11,7 @@
 -Deep learning 모델에 각종 경제지표를 학습시켜 채권의 양상을 예측 후 최종적인 투자전략 구축-
 #### 채권 가격 예측 
 - LSTM
-#### *채권 양상 분류 및 투자 전략 설정(최종 선정)
+#### 채권 양상 분류 및 투자 전략 설정(최종 선정)
 - CNN : VGG16의 일부 블록 (1d convolution 블록 활용)
 - CSTM : CNN (VGG16의 일부 블록, 1d conv)을 앞에 배치하고 뒷 부분에 LSTM을 배치 
 | Week | Goal | Method | Result | Feedback | Note | 
