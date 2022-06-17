@@ -16,7 +16,7 @@
 - CSTM : CNN (VGG16의 일부 블록, 1d conv)을 앞에 배치하고 뒷 부분에 LSTM을 배치 
 ##### 분류 기준 
 - 2 Labels : 향후 20일(한 달) 간의 채권 수익률 평균이 현재보다 높을 때 buy, 낮을 때 sell
-- 4 Labels : 20일간 평균이 현재보다 높으며 높은 일수가 12일 이상일 때 very buy, 높은 일수가 12일 미만일 때 little buy, 20일간 평균이 현재보다 낮으며 낮은 일수가 8일 이상일 때 little sell, 낮은 일수가 8일 미만일 때 very sell
+- 4 Labels : 20일간 평균이 현재보다 높으며 높은 일수가 12일 이상일 때 very buy/ 높은 일수가 12일 미만일 때 little buy/ 20일간 평균이 현재보다 낮으며 낮은 일수가 8일 이상일 때 little sell/ 낮은 일수가 8일 미만일 때 very sell
 
 | Week | Goal | Method | Result | Feedback | Note | 
 |:---:|:---:|:---:|:---:|:---:|:---:|
