@@ -14,6 +14,8 @@
 #### 채권 양상 분류 및 투자 전략 설정(최종 선정)
 - CNN : VGG16의 일부 블록 (1d convolution 블록 활용)
 - CSTM : CNN (VGG16의 일부 블록, 1d conv)을 앞에 배치하고 뒷 부분에 LSTM을 배치 
+- 분류 기준 
+  *
 
 | Week | Goal | Method | Result | Feedback | Note | 
 |:---:|:---:|:---:|:---:|:---:|:---:|
